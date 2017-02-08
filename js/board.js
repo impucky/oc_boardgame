@@ -32,7 +32,13 @@ var Board = {
     function randCell() {
       x = helpers.randRange(0, board.width - 1);
       y = helpers.randRange(0, board.height - 1);
-      if (board.grid[x][y].isObs || board.grid[x][y].hasWeapon || board.grid[x][y].hasPlayer) {
+      if (board.grid[x][y].isObs || board.grid[x][y].hasWeapon || board.grid[x][y].hasPlayer
+      // pas de joueur autour, temporaire
+      || board.grid[x + 1][y].hasPlayer
+      || board.grid[x][y + 1].hasPlayer
+      || board.grid[x - 1][y].hasPlayer
+      || board.grid[x][y - 1].hasPlayer
+      ) {
         randCell();
       }
     }
