@@ -10,8 +10,8 @@ var helpers = {
 // board.js
 var Board = {
   grid: [],
-  width: 18,
-  height: 18,
+  width: 9,
+  height: 9,
   obstacleChance: 15,
 
   // remplit le tableau d'instances de Cell
@@ -20,7 +20,7 @@ var Board = {
       this.grid.push([]);
       for (var y = 0; y < this.height; y++) {
         var cell = Object.create(Cell);
-        cell.init(x, y, this.obstacleChance)
+        cell.init(y, x, this.obstacleChance)
         this.grid[x].push(cell);
       }
     }
@@ -59,6 +59,20 @@ var Board = {
       var cell = this.getEmptyCell();
       cell.hasPlayer = true;
       cell.player = Game.players[i];
+      cell.player.x = cell.x;
+      cell.player.y = cell.y;
+    }
+  },
+
+  moveCoords: function(direction, x, y, steps) {
+    if (direction === "N") {
+      return [x, (y - steps)];
+    } else if (direction === "E") {
+      return [(x + steps), y];
+    } else if (direction === "S") {
+      return [x, (y + steps)];
+    } else {
+      return [(x - steps), y];
     }
   },
 
@@ -71,7 +85,7 @@ var Board = {
         var currentCell = this.grid[i][j];
         var imgUrl;
         if (currentCell.hasPlayer) {
-          imgUrl = `img/player${currentCell.player.id}.png`;
+          imgUrl = `img/player${currentCell.player.id + 1}.png`;
         } else if (currentCell.isObs) {
           imgUrl = 'img/obstacle.png';
         }
@@ -81,9 +95,19 @@ var Board = {
           imgUrl = 'img/empty.png';
         }
 
-        var cell = `<td><img src="${imgUrl}"></td>`;
+        var cell = `<td><img src="${imgUrl}"/></td>`;
         $(currentRow).append(cell);
       }
+    }
+  },
+  //testing
+  renderMoves: function() {
+    var moves = Game.players[0].getAvailableMoves();
+    var table = $('#board')[0];
+    for (var i = 0; i < moves.length; i++) {
+      var cell = table.rows[moves[i][1]].cells[moves[i][0]];
+      var $cell = $(cell);
+      $cell.append('<img src="img/test.png"/>');
     }
   }
 }

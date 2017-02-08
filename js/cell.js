@@ -10,5 +10,10 @@ var Cell = {
     this.weapon;
     this.hasPlayer = false;
     this.player;
+  },
+  isClear: function() {
+    if (!this.isObs && !this.hasPlayer) {
+      return true;
+    } else return false;
   }
 }

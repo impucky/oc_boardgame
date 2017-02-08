@@ -1,4 +1,5 @@
 var Game = {
+  currentTurn: 1,
   playersNb: 2,
   players: [],
   playerSprites: {
@@ -26,7 +27,7 @@ var Game = {
   initPlayers: function() {
     for (var i = 0; i < this.playersNb; i++) {
       var player = Object.create(Player);
-      player.init(i + 1, this.weapons[0]);
+      player.init(i, this.weapons[0]);
       this.players.push(player);
     }
   },
@@ -43,4 +44,5 @@ var Game = {
 
 $(document).ready(function() {
   Game.startGame();
+  Board.renderMoves();
 });
