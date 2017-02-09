@@ -5,6 +5,7 @@ body {
 table {
   border-spacing: 0;
 }
+
 td {
   position: relative;
   width: 32px;
@@ -17,4 +18,18 @@ td img {
   position: absolute;
   top: 0;
   left: 0;
+}
+
+.cell-move {
+  opacity: 0.5;
+}
+
+.cell-move:hover {
+  opacity: 1;
+}
+
+#ui-left {
+  background: #fff;
+  width: 416px;
+  height: 50px;
 }

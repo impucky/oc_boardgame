@@ -1,5 +1,5 @@
 var Game = {
-  currentTurn: 1,
+  currentTurn: 0,
   playersNb: 2,
   players: [],
   playerSprites: {
@@ -9,9 +9,9 @@ var Game = {
   weapons: [
     {id: 0, name: "Dagger",dmg: 10},
     {id: 1, name: "Longsword", dmg: 20},
-    {id: 2, name: "Rapier", dmg: 25},
-    {id: 3, name: "Whip", dmg: 20},
-    {id: 4, name: "Magic Bolt", dmg: 30}
+    {id: 2, name: "Hammer", dmg: 25},
+    {id: 3, name: "Axe", dmg: 20},
+    {id: 4, name: "Rolling Pin", dmg: 30}
   ],
   weaponSprites: {
     0: "img/weapon0.png",
@@ -38,7 +38,7 @@ var Game = {
     Board.fill();
     Board.placeWeapons();
     Board.placePlayers();
-    Board.render($('#board'));
+    Board.render();
   }
 }
 

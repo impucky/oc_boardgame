@@ -4,14 +4,10 @@ var helpers = {
   }
 }
 
-// cell.js
-
-
-// board.js
 var Board = {
   grid: [],
-  width: 9,
-  height: 9,
+  width: 13,
+  height: 13,
   obstacleChance: 15,
 
   // remplit le tableau d'instances de Cell
@@ -77,6 +73,8 @@ var Board = {
   },
 
   render: function(table) {
+    var table = $('#board');
+    table.html('');
     for (var i = 0; i < this.width; i++) {
       // colonnes, position x en id
       table.append(`<tr id="${i}"></tr>`);
@@ -84,6 +82,7 @@ var Board = {
         var currentRow = `tr[id="${i}"]`;
         var currentCell = this.grid[i][j];
         var imgUrl;
+
         if (currentCell.hasPlayer) {
           imgUrl = `img/player${currentCell.player.id + 1}.png`;
         } else if (currentCell.isObs) {
@@ -95,11 +94,45 @@ var Board = {
           imgUrl = 'img/empty.png';
         }
 
-        var cell = `<td><img src="${imgUrl}"/></td>`;
+        var cell = `<td class="cell" id=${j}-${i}><img src="${imgUrl}"/></td>`;
         $(currentRow).append(cell);
       }
     }
+    $('.cell').click(Board.handleCellClick);
+    $('.cell').hover(Board.handleCellHover);
   },
+
+  handleCellClick: function() {
+    var coords = $(this).attr('id').split('-').map(Number);
+    var cellFrom = Board.grid[Game.players[0].y][Game.players[0].x];
+    var cellTo = Board.grid[coords[1]][coords[0]];
+    var canMoveTo = ($(this).children('.cell-move').length === 1) ? true : false;
+    if (canMoveTo) {
+      cellFrom.hasPlayer = false;
+      cellTo.hasPlayer = true;
+      cellTo.player = cellFrom.player;
+      Game.players[0].x = coords[0];
+      Game.players[0].y = coords[1];
+      Board.render();
+      Board.renderMoves();
+    }
+  },
+
+  handleCellHover: function() {
+    var ui = $('#ui-left');
+    var coords = $(this).attr('id').split('-');
+    var cell = Board.grid[coords[1]][coords[0]];
+    var message = 'Cell at ' + coords[0] + ' ' + coords[1];
+    if (cell.isObs) {
+      message += '<br>Obstacle'
+    } else if (cell.hasWeapon) {
+      message += '<br>Weapon: ' + cell.weapon.name;
+    } else if (cell.hasPlayer) {
+      message += '<br>Player' + cell.player.id;
+    }
+    ui.html(message);
+  },
+
   //testing
   renderMoves: function() {
     var moves = Game.players[0].getAvailableMoves();
@@ -107,7 +140,8 @@ var Board = {
     for (var i = 0; i < moves.length; i++) {
       var cell = table.rows[moves[i][1]].cells[moves[i][0]];
       var $cell = $(cell);
-      $cell.append('<img src="img/test.png"/>');
+
+      $cell.append('<img class="cell-move" src="img/test.png"/>');
     }
   }
 }
