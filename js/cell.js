@@ -8,13 +8,26 @@ var Cell = {
       this.isObs = true;
     }
     this.hasWeapon = false;
-    this.weapon;
+    this.weaponId;
     this.hasPlayer = false;
-    //this.player;
+    this.playerId;
   },
+
   isClear: function() {
     if (!this.isObs && !this.hasPlayer) {
       return true;
     } else return false;
+  },
+
+  addPlayer: function(id) {
+    this.playerId = id;
+    this.hasPlayer = true;
+  },
+
+  removePlayer: function() {
+    this.playerId = null;
+    this.hasPlayer = false;
   }
+
+
 }

@@ -1,5 +1,6 @@
 var Game = {
   currentTurn: 0,
+  inBattle: false,
   playersNb: 2,
   players: [],
   playerSprites: {
@@ -17,6 +18,7 @@ var Game = {
     0: "img/weapon0.png",
     1: "img/weapon1.png"
   },
+
   initWeapons: function() {
     this.weapons.map(function(el) {
       el = Object.create(Weapon);
@@ -39,6 +41,7 @@ var Game = {
     Board.placeWeapons();
     Board.placePlayers();
     Board.render();
+
   }
 }
 

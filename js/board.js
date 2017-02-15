@@ -6,8 +6,8 @@ var helpers = {
 
 var Board = {
   grid: [],
-  width: 13,
-  height: 13,
+  width: 17,
+  height: 17,
   obstacleChance: 15,
 
   // remplit le tableau d'instances de Cell
@@ -39,14 +39,15 @@ var Board = {
       }
     }
     randCell();
-    return board.grid[x][y];
+    return Board.grid[x][y];
   },
 
   placeWeapons: function() {
     for (var i = 1; i < Game.weapons.length; i++) {
       var cell = this.getEmptyCell();
+      //
       cell.hasWeapon = true;
-      cell.weapon = Game.weapons[i];
+      cell.weaponId = Game.weapons[i].id;
     }
   },
 
@@ -54,21 +55,26 @@ var Board = {
     for (var i = 0; i < Game.playersNb; i++) {
       var cell = this.getEmptyCell();
       cell.hasPlayer = true;
-      cell.player = Game.players[i];
-      cell.player.x = cell.x;
-      cell.player.y = cell.y;
+      cell.playerId = i;
+      Game.players[i].x = cell.x;
+      Game.players[i].y = cell.y;
     }
   },
 
   moveCoords: function(direction, x, y, steps) {
+    var target = {x: x, y: y};
     if (direction === "N") {
-      return [x, (y - steps)];
+      target.y -= steps;
+      return target;
     } else if (direction === "E") {
-      return [(x + steps), y];
+      target.x += steps;
+      return target;
     } else if (direction === "S") {
-      return [x, (y + steps)];
+      target.y += steps;
+      return target;
     } else {
-      return [(x - steps), y];
+      target.x -= steps;
+      return target;
     }
   },
 
@@ -84,64 +90,66 @@ var Board = {
         var imgUrl;
 
         if (currentCell.hasPlayer) {
-          imgUrl = `img/player${currentCell.player.id + 1}.png`;
+          imgUrl = `img/player${currentCell.playerId + 1}.png`;
         } else if (currentCell.isObs) {
           imgUrl = 'img/obstacle.png';
         }
         else if (currentCell.hasWeapon) {
-          imgUrl = `img/weapon${currentCell.weapon.id}.png`;
+          imgUrl = `img/weapon${currentCell.weaponId}.png`;
         } else {
           imgUrl = 'img/empty.png';
         }
-
-        var cell = `<td class="cell" id=${j}-${i}><img src="${imgUrl}"/></td>`;
+        // remplacer id par data attr. pour stocker les coords?
+        var cell = `<td class="cell" data-x="${j}" data-y="${i}"><img src="${imgUrl}"/></td>`;
         $(currentRow).append(cell);
       }
     }
     $('.cell').click(Board.handleCellClick);
     $('.cell').hover(Board.handleCellHover);
+
+    // interface - a séparer
+    var ui = $('#ui-left');
+    ui.html('<h3>Player 1</h3>Weapon: ' + Game.players[0].weapon.name
+      + '<h3>Player 2</h3>Weapon: ' + Game.players[1].weapon.name
+    );
+
   },
 
   handleCellClick: function() {
-    var coords = $(this).attr('id').split('-').map(Number);
-    var cellFrom = Board.grid[Game.players[0].y][Game.players[0].x];
-    var cellTo = Board.grid[coords[1]][coords[0]];
+    var coords = $(this).data();
+    var targetCell = Board.grid[coords.y][coords.x];
     var canMoveTo = ($(this).children('.cell-move').length === 1) ? true : false;
-    if (canMoveTo) {
-      cellFrom.hasPlayer = false;
-      cellTo.hasPlayer = true;
-      cellTo.player = cellFrom.player;
-      Game.players[0].x = coords[0];
-      Game.players[0].y = coords[1];
-      Board.render();
-      Board.renderMoves();
+
+    if (!Game.inBattle && canMoveTo) {
+      Game.players[Game.currentTurn].movePlayer(targetCell.x, targetCell.y)
     }
+
   },
 
   handleCellHover: function() {
-    var ui = $('#ui-left');
-    var coords = $(this).attr('id').split('-');
-    var cell = Board.grid[coords[1]][coords[0]];
-    var message = 'Cell at ' + coords[0] + ' ' + coords[1];
+    var debug = $('#debug');
+    var coords = $(this).data();
+    var cell = Board.grid[coords.y][coords.x];
+    var message = 'Cell at ' + coords.x + ' ' + coords.y;
     if (cell.isObs) {
       message += '<br>Obstacle'
     } else if (cell.hasWeapon) {
-      message += '<br>Weapon: ' + cell.weapon.name;
+      message += '<br>Weapon: ' + Game.weapons[cell.weaponId].name;
     } else if (cell.hasPlayer) {
-      message += '<br>Player' + cell.player.id;
+      message += '<br>Player' + cell.playerId;
     }
-    ui.html(message);
+    debug.html(message);
   },
 
   //testing
   renderMoves: function() {
-    var moves = Game.players[0].getAvailableMoves();
+    var moves = Game.players[Game.currentTurn].getAvailableMoves();
     var table = $('#board')[0];
     for (var i = 0; i < moves.length; i++) {
-      var cell = table.rows[moves[i][1]].cells[moves[i][0]];
-      var $cell = $(cell);
+      var tableCell = table.rows[moves[i].y].cells[moves[i].x];
+      var $tableCell = $(tableCell);
 
-      $cell.append('<img class="cell-move" src="img/test.png"/>');
+      $tableCell.append('<img class="cell-move" src="img/move.png"/>');
     }
   }
 }
