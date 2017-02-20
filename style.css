@@ -1,5 +1,17 @@
+@font-face {
+  font-family: "Press Start";
+  src: url("font/prstartk.ttf");
+}
+
+body, div, h1, h2, h3 {
+  margin: 0;
+  padding: 0;
+}
+
 body {
   background: #111;
+  color: #16131c;
+  font-family: "Press Start", sans-serif;
 }
 
 table {
@@ -29,17 +41,26 @@ td img {
   opacity: 1;
 }
 
-#ui-left {
-  float: left;
-  background: #fff;
-  width: 200px;
-  height: 416px;
-  padding: 0 5px;
+#game {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
 }
 
-#debug {
-  float: right;
-  background: #fff;
-  width: 200px;
-  height: 416px;
+#ui {
+  background: #418EB0;
+  padding: 10px;
+  margin: 10px;
+  width: 250px;
+  height: 440px;
+  border-radius: 5px;
+}
+
+#ui-players {
+  border-bottom: 1px solid black;
+  padding: 5px;
+}
+
+#ui-info {
+  padding: 10px 5px;
 }

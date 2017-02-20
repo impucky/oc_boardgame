@@ -3,6 +3,7 @@ var Game = {
   inBattle: false,
   playersNb: 2,
   players: [],
+  playerBaseHp: 100,
   playerSprites: {
     0: 'img/player1.png',
     1: 'img/player2.png'
@@ -29,7 +30,7 @@ var Game = {
   initPlayers: function() {
     for (var i = 0; i < this.playersNb; i++) {
       var player = Object.create(Player);
-      player.init(i, this.weapons[0]);
+      player.init(i, this.weapons[0], this.playerBaseHp);
       this.players.push(player);
     }
   },

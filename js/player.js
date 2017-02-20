@@ -1,7 +1,9 @@
 var Player = {
-  init: function(id, weapon) {
+  init: function(id, weapon, hp) {
     this.id = id;
     this.weapon = weapon;
+    this.hp = hp;
+    this.isMoving = false;
     this.x;
     this.y;
   },
@@ -21,7 +23,7 @@ var Player = {
     return moves;
   },
 
-  movePlayer: function(x, y) {
+  move: function(x, y) {
     var player = this;
     var originCell = Board.grid[player.y][player.x];
     var targetCell = Board.grid[y][x];
@@ -65,6 +67,7 @@ var Player = {
 
       if (steps === 0) {
         clearInterval(moveInterval);
+        player.isMoving = false;
         Game.currentTurn = (Game.currentTurn === 0) ? 1 : 0;
         Board.renderMoves();
       }

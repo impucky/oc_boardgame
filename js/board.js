@@ -6,8 +6,8 @@ var helpers = {
 
 var Board = {
   grid: [],
-  width: 17,
-  height: 17,
+  width: 15,
+  height: 15,
   obstacleChance: 15,
 
   // remplit le tableau d'instances de Cell
@@ -82,7 +82,6 @@ var Board = {
     var table = $('#board');
     table.html('');
     for (var i = 0; i < this.width; i++) {
-      // colonnes, position x en id
       table.append(`<tr id="${i}"></tr>`);
       for (var j = 0; j < this.height; j++) {
         var currentRow = `tr[id="${i}"]`;
@@ -99,7 +98,7 @@ var Board = {
         } else {
           imgUrl = 'img/empty.png';
         }
-        // remplacer id par data attr. pour stocker les coords?
+
         var cell = `<td class="cell" data-x="${j}" data-y="${i}"><img src="${imgUrl}"/></td>`;
         $(currentRow).append(cell);
       }
@@ -108,10 +107,12 @@ var Board = {
     $('.cell').hover(Board.handleCellHover);
 
     // interface - a séparer
-    var ui = $('#ui-left');
-    ui.html('<h3>Player 1</h3>Weapon: ' + Game.players[0].weapon.name
-      + '<h3>Player 2</h3>Weapon: ' + Game.players[1].weapon.name
-    );
+    var ui = $('#ui-players');
+    ui.html(`<h3>Player 1</h3><p>Weapon: ${Game.players[0].weapon.name}</p>
+    <p>HP: ${Game.players[0].hp}</p>
+    <h3>Player 2</h3><p>Weapon: ${Game.players[1].weapon.name}</p>
+    <p>HP: ${Game.players[1].hp}</p>`);
+
 
   },
 
@@ -119,18 +120,19 @@ var Board = {
     var coords = $(this).data();
     var targetCell = Board.grid[coords.y][coords.x];
     var canMoveTo = ($(this).children('.cell-move').length === 1) ? true : false;
-
-    if (!Game.inBattle && canMoveTo) {
-      Game.players[Game.currentTurn].movePlayer(targetCell.x, targetCell.y)
+    var activePlayer = Game.players[Game.currentTurn];
+    if (!Game.inBattle && !activePlayer.isMoving && canMoveTo) {
+      activePlayer.move(targetCell.x, targetCell.y);
+      activePlayer.isMoving = true;
     }
 
   },
 
   handleCellHover: function() {
-    var debug = $('#debug');
+    var ui = $('#ui-info');
     var coords = $(this).data();
     var cell = Board.grid[coords.y][coords.x];
-    var message = 'Cell at ' + coords.x + ' ' + coords.y;
+    var message = '@' + coords.x + '-' + coords.y;
     if (cell.isObs) {
       message += '<br>Obstacle'
     } else if (cell.hasWeapon) {
@@ -138,7 +140,7 @@ var Board = {
     } else if (cell.hasPlayer) {
       message += '<br>Player' + cell.playerId;
     }
-    debug.html(message);
+    ui.html(message);
   },
 
   //testing
